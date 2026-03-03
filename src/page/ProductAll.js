@@ -1,22 +1,30 @@
 import React, { useEffect } from "react";
-import ProductCard from "../component/ProductCard";
 import { Row, Col, Container } from "react-bootstrap";
-import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "../action/productAction";
-import { commonUiActions } from "../action/commonUiAction";
+import ProductCard from "../component/ProductCard";
 
 const ProductAll = () => {
   const dispatch = useDispatch();
-  const error = useSelector((state) => state.product.error);
-  // 처음 로딩하면 상품리스트 불러오기
+  // Reducer에서 설정한 이름 'products'와 반드시 일치해야 합니다.
+  const { products } = useSelector((state) => state.product);
+
+  useEffect(() => {
+    dispatch(productActions.getProductList({}));
+  }, [dispatch]);
 
   return (
     <Container>
       <Row>
-        <Col md={3} sm={12}>
-          <ProductCard />
-        </Col>
+        {products && products.length > 0 ? (
+          products.map((item) => (
+            <Col key={item._id} md={3} sm={12}>
+              <ProductCard product={item} />
+            </Col>
+          ))
+        ) : (
+          <div className="text-center w-100 mt-5"><h4>상품 데이터를 불러오는 중입니다...</h4></div>
+        )}
       </Row>
     </Container>
   );

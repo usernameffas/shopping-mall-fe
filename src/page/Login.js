@@ -16,6 +16,7 @@ const Login = () => {
 
   const loginWithEmail = (event) => {
     event.preventDefault();
+    dispatch(userActions.loginWithEmail({ email, password }));
     //이메일,패스워드를 가지고 백엔드로 보내기
   };
 
