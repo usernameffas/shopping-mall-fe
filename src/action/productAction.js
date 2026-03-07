@@ -19,7 +19,7 @@ const getProductDetail = (id) => async (dispatch) => {
   try {
     dispatch({ type: types.GET_PRODUCT_DETAIL_REQUEST });
     const response = await api.get(`/api/product/${id}`);
-    dispatch({ type: types.GET_PRODUCT_DETAIL_SUCCESS, payload: response.data });
+    dispatch({ type: types.GET_PRODUCT_DETAIL_SUCCESS, payload: response.data.product });
   } catch (error) {
     dispatch({ type: types.GET_PRODUCT_DETAIL_FAIL, payload: error.message });
   }

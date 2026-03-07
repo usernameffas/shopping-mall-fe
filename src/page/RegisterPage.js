@@ -18,18 +18,40 @@ const RegisterPage = () => {
   const [policyError, setPolicyError] = useState(false);
   const error = useSelector((state) => state.user.error);
 
-  const register = (event) => {
-    event.preventDefault();
-    // 비번 중복확인 일치하는지 확인
-    // 이용약관에 체크했는지 확인
-    // FormData에 있는 값을 가지고 백엔드로 넘겨주기
-    //성공후 로그인 페이지로 넘어가기
-  };
+  // const register = (event) => {
+  //   event.preventDefault();
+  //   // 비번 중복확인 일치하는지 확인
+  //   // 이용약관에 체크했는지 확인
+  //   // FormData에 있는 값을 가지고 백엔드로 넘겨주기
+  //   //성공후 로그인 페이지로 넘어가기
+  // };
 
-  const handleChange = (event) => {
-    event.preventDefault();
-    // 값을 읽어서 FormData에 넣어주기
-  };
+  // const handleChange = (event) => {
+  //   event.preventDefault();
+  //   // 값을 읽어서 FormData에 넣어주기
+  // };
+
+  const register = (event) => {
+  event.preventDefault();
+  if (formData.password !== formData.confirmPassword) {
+    setPasswordError("비밀번호가 일치하지 않습니다");
+    return;
+  }
+  if (!formData.policy) {
+    setPolicyError(true);
+    return;
+  }
+  dispatch(userActions.registerUser(formData, navigate));
+};
+
+const handleChange = (event) => {
+  const { id, value, checked, type } = event.target;
+  if (type === "checkbox") {
+    setFormData({ ...formData, [id]: checked });
+  } else {
+    setFormData({ ...formData, [id]: value });
+  }
+};
 
   return (
     <Container className="register-area">

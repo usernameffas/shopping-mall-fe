@@ -81,7 +81,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const handleStockChange = (value, index) => {
     const newStock = [...stock];
-    newStock[index][1] = value;
+    newStock[index][1] = parseInt(value); // 숫자로 변환!
     setStock(newStock);
   };
 
