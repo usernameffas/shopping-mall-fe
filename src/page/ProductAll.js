@@ -9,13 +9,14 @@ const ProductAll = () => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.product);
   const location = useLocation();
-
+    
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const name = searchParams.get("name");
-    dispatch(productActions.getProductList({ name }));
+    const category = searchParams.get("category");
+    dispatch(productActions.getProductList({ name, category }));
   }, [dispatch, location.search]);
-
+  
   return (
     <Container>
       <Row>

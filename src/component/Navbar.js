@@ -10,7 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../action/userAction";
-import { cartActions } from "../action/cartAction"; // 파일명이 action이면 이렇게, actions면 끝에 s 붙이기!
+import { cartActions } from "../action/cartAction";
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
@@ -31,7 +31,6 @@ const Navbar = ({ user }) => {
     "지속가능성",
   ];
 
-  // ✅ 장바구니 숫자 갱신 트리거
   useEffect(() => {
     if (user) {
       dispatch(cartActions.getCartQty());
@@ -51,7 +50,6 @@ const Navbar = ({ user }) => {
     dispatch(userActions.logout());
   };
 
-  // ❗ 여기가 42번 라인 근처입니다. 함수 내부임을 보장합니다.
   return (
     <div>
       {showSearchBox && (
@@ -78,10 +76,11 @@ const Navbar = ({ user }) => {
         <button className="closebtn" onClick={() => setWidth(0)}>
           &times;
         </button>
-
         <div className="side-menu-list" id="menu-list">
           {menuList.map((menu, index) => (
-            <button key={index}>{menu}</button>
+            <button key={index} onClick={() => navigate(`/?category=${menu.toLowerCase()}`)}>
+              {menu}
+            </button>
           ))}
         </div>
       </div>
@@ -94,7 +93,6 @@ const Navbar = ({ user }) => {
         <div className="burger-menu hide">
           <FontAwesomeIcon icon={faBars} onClick={() => setWidth(250)} />
         </div>
-
         <div>
           <div className="display-flex">
             {user ? (
@@ -133,7 +131,6 @@ const Navbar = ({ user }) => {
           </div>
         </div>
       </div>
-
       <div className="nav-logo">
         <Link to="/">
           <img width={100} src="/image/hm-logo.png" alt="hm-logo.png" />
@@ -143,12 +140,15 @@ const Navbar = ({ user }) => {
         <ul className="menu">
           {menuList.map((menu, index) => (
             <li key={index}>
-              <a href="#">{menu}</a>
+              <a href="#" onClick={(e) => {
+                e.preventDefault();
+                navigate(`/?category=${menu.toLowerCase()}`);
+              }}>{menu}</a>
             </li>
           ))}
         </ul>
         {!isMobile && (
-          <div className="search-box landing-search-box ">
+          <div className="search-box landing-search-box">
             <FontAwesomeIcon icon={faSearch} />
             <input
               type="text"
