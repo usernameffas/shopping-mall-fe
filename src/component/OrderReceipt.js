@@ -10,6 +10,10 @@ const OrderReceipt = () => {
   const navigate = useNavigate();
   const { cartList } = useSelector((state) => state.cart);
 
+  const hasSoldOut = cartList.some(
+    (item) => (item.productId?.stock?.[item.size] || 0) <= 0
+  );
+
   const totalPrice = cartList.reduce(
     (sum, item) => {
       const stock = item.productId?.stock?.[item.size] || 0;
@@ -43,13 +47,21 @@ const OrderReceipt = () => {
         <div><strong>₩ {currencyFormat(totalPrice)}</strong></div>
       </div>
       {location.pathname.includes("/cart") && (
-        <Button
-          variant="dark"
-          className="payment-button"
-          onClick={() => navigate("/payment")}
-        >
-          결제 계속하기
-        </Button>
+        <>
+          {hasSoldOut && (
+            <div className="text-danger mb-2">
+              품절 상품이 있습니다. 제거 후 결제해주세요.
+            </div>
+          )}
+          <Button
+            variant="dark"
+            className="payment-button"
+            onClick={() => !hasSoldOut && navigate("/payment")}
+            disabled={hasSoldOut}
+          >
+            {hasSoldOut ? "품절 상품을 제거해주세요" : "결제 계속하기"}
+          </Button>
+        </>
       )}
       <div>
         가능한 결제 수단 귀하가 결제 단계에 도달할 때까지 가격 및 배송료는
