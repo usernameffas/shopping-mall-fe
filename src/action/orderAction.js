@@ -11,8 +11,8 @@ const createOrder = (payload) => async (dispatch) => {
     dispatch(cartActions.getCartList());
     dispatch(commonUiActions.showToastMessage("주문이 완료됐습니다!", "success"));
     } catch (error) {
-      dispatch({ type: types.CREATE_ORDER_FAIL, payload: error.message });
-      dispatch(commonUiActions.showToastMessage(error.response?.data?.error || error.message, "error"));
+      dispatch({ type: types.CREATE_ORDER_FAIL, payload: error.error });
+      dispatch(commonUiActions.showToastMessage(error.error || "주문에 실패했습니다.", "error"));
     }
 };
 
