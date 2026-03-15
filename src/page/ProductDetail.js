@@ -69,8 +69,12 @@ const ProductDetail = () => {
             <Dropdown.Menu className="size-drop-down">
               {selectedProduct?.stock && Object.keys(selectedProduct.stock).length > 0 ? (
                 Object.keys(selectedProduct.stock).map((s) => (
-                  <Dropdown.Item key={s} eventKey={s}>
-                    {s.toUpperCase()}
+                  <Dropdown.Item 
+                    key={s} 
+                    eventKey={s}
+                    disabled={selectedProduct.stock[s] <= 0}  // ← 재고 0이면 비활성화
+                  >
+                    {s.toUpperCase()} {selectedProduct.stock[s] <= 0 ? "(품절)" : `(${selectedProduct.stock[s]})`}
                   </Dropdown.Item>
                 ))
               ) : (
