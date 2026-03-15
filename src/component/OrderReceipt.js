@@ -11,7 +11,11 @@ const OrderReceipt = () => {
   const { cartList } = useSelector((state) => state.cart);
 
   const totalPrice = cartList.reduce(
-    (sum, item) => sum + item.productId.price * item.qty,
+    (sum, item) => {
+      const stock = item.productId?.stock?.[item.size] || 0;
+      if (stock <= 0) return sum;
+      return sum + item.productId.price * item.qty;
+    },
     0
   );
 
@@ -19,14 +23,20 @@ const OrderReceipt = () => {
     <div className="receipt-container">
       <h3 className="receipt-title">주문 내역</h3>
       <ul className="receipt-list">
-        {cartList.map((item) => (
-          <li key={item._id}>
-            <div className="display-flex space-between">
-              <div>{item.productId.name} ({item.size}) x {item.qty}</div>
-              <div>₩ {currencyFormat(item.productId.price * item.qty)}</div>
-            </div>
-          </li>
-        ))}
+        {cartList.map((item) => {
+          const stock = item.productId?.stock?.[item.size] || 0;
+          return (
+            <li key={item._id}>
+              <div className="display-flex space-between">
+                <div>
+                  {item.productId.name} ({item.size}) x {item.qty}
+                  {stock <= 0 && <span className="text-danger ms-1">(품절)</span>}
+                </div>
+                <div>{stock <= 0 ? <span className="text-danger">품절</span> : `₩ ${currencyFormat(item.productId.price * item.qty)}`}</div>
+              </div>
+            </li>
+          );
+        })}
       </ul>
       <div className="display-flex space-between receipt-title">
         <div><strong>Total:</strong></div>
