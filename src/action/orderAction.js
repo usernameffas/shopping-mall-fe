@@ -10,10 +10,10 @@ const createOrder = (payload) => async (dispatch) => {
     dispatch({ type: types.CREATE_ORDER_SUCCESS, payload: response.data.orderNum });
     dispatch(cartActions.getCartList());
     dispatch(commonUiActions.showToastMessage("주문이 완료됐습니다!", "success"));
-  } catch (error) {
-    dispatch({ type: types.CREATE_ORDER_FAIL, payload: error.message });
-    dispatch(commonUiActions.showToastMessage(error.message, "error"));
-  }
+    } catch (error) {
+      dispatch({ type: types.CREATE_ORDER_FAIL, payload: error.message });
+      dispatch(commonUiActions.showToastMessage(error.response?.data?.error || error.message, "error"));
+    }
 };
 
 const getOrder = () => async (dispatch) => {
