@@ -10,6 +10,8 @@ const initialState = {
 function productReducer(state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
+    case types.SET_SELECTED_PRODUCT:
+      return { ...state, selectedProduct: payload };
     case types.PRODUCT_GET_REQUEST:
     case types.GET_PRODUCT_DETAIL_REQUEST:
       return { ...state, loading: true };
@@ -26,6 +28,8 @@ function productReducer(state = initialState, action) {
 
     default:
       return state;
+      
+    
   }
 }
 

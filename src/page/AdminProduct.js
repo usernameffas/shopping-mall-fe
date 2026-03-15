@@ -32,11 +32,12 @@ const AdminProduct = () => {
   const deleteItem = (id) => {
     dispatch(productActions.deleteProduct(id));
   };
-
+  
   const openEditForm = (product) => {
+    dispatch({ type: types.SET_SELECTED_PRODUCT, payload: product });
     setMode("edit");
     setShowDialog(true);
-  };
+  };  
 
   const handleClickNewItem = () => {
     setMode("new");
