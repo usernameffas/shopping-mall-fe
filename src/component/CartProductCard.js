@@ -8,6 +8,7 @@ import { currencyFormat } from "../utils/number";
 
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
+  const maxQty = item.productId?.stock?.[item.size] || 0;
 
   const handleQtyChange = (event) => {
     dispatch(cartActions.updateQty(item._id, event.target.value));
@@ -41,16 +42,20 @@ const CartProductCard = ({ item }) => {
           <div>Total: ₩ {currencyFormat(item.productId?.price * item.qty)}</div>
           <div>
             Quantity:
-            <Form.Select
-              onChange={handleQtyChange}
-              required
-              defaultValue={item.qty}
-              className="qty-dropdown"
-            >
-              {[1,2,3,4,5,6,7,8,9,10].map((num) => (
-                <option key={num} value={num}>{num}</option>
-              ))}
-            </Form.Select>
+            {maxQty === 0 ? (
+              <span className="text-danger ms-2">품절</span>
+            ) : (
+              <Form.Select
+                onChange={handleQtyChange}
+                required
+                defaultValue={item.qty}
+                className="qty-dropdown"
+              >
+                {Array.from({ length: maxQty }, (_, i) => i + 1).map((num) => (
+                  <option key={num} value={num}>{num}</option>
+                ))}
+              </Form.Select>
+            )}
           </div>
         </Col>
       </Row>
