@@ -14,6 +14,10 @@ const PaymentPage = () => {
   const { orderNum } = useSelector((state) => state.order);
   const [firstLoading, setFirstLoading] = useState(true);
 
+  const hasSoldOut = cartList.some(
+    (item) => (item.productId?.stock?.[item.size] || 0) <= 0
+  );
+
   const [cardValue, setCardValue] = useState({
     cvc: "",
     expiry: "",
@@ -140,12 +144,18 @@ const PaymentPage = () => {
                 <div>
                   <h2 className="payment-title">결제 정보</h2>
                 </div>
+                {hasSoldOut && (
+                  <div className="text-danger mb-2">
+                    품절 상품이 있습니다. 장바구니에서 제거 후 결제해주세요.
+                  </div>
+                )}
                 <Button
                   variant="dark"
                   className="payment-button pay-button"
                   type="submit"
+                  disabled={hasSoldOut}
                 >
-                  결제하기
+                  {hasSoldOut ? "품절 상품을 제거해주세요" : "결제하기"}
                 </Button>
               </Form>
             </div>
