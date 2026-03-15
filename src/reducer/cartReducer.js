@@ -16,20 +16,35 @@ function cartReducer(state = initialState, action) {
     case types.DELETE_CART_ITEM_REQUEST:
     case types.UPDATE_CART_ITEM_REQUEST:
       return { ...state, loading: true };
+
     case types.GET_CART_LIST_SUCCESS:
-      return { ...state, loading: false, cartList: payload.cart.items };
-    // case types.GET_CART_LIST_SUCCESS:
-    //   return { ...state, loading: false, cartList: payload.data };
+      return {
+        ...state,
+        loading: false,
+        cartList: payload.cart.items,
+        cartItemCount: payload.cart.items.length, // ✅ 수정
+      };
+
     case types.ADD_TO_CART_SUCCESS:
       return { ...state, loading: false };
+
     case types.DELETE_CART_ITEM_SUCCESS:
-      return { ...state, loading: false };
+      return {
+        ...state,
+        loading: false,
+        cartList: state.cartList.filter((item) => item._id !== payload), // ✅ 수정
+        cartItemCount: state.cartItemCount - 1, // ✅ 수정
+      };
+
     case types.UPDATE_CART_ITEM_SUCCESS:
-      return { ...state, loading: false, cartList: payload.data };
+      return { ...state, loading: false };
+
     case types.GET_CART_QTY_SUCCESS:
       return { ...state, cartItemCount: payload };
+
     case LOGOUT:
       return { ...initialState };
+
     default:
       return state;
   }

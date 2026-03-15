@@ -8,10 +8,13 @@ const addToCart = ({ id, size }) => async (dispatch) => {
     const response = await api.post("/api/cart", { productId: id, size, qty: 1 });
     dispatch({ type: types.ADD_TO_CART_SUCCESS, payload: response.data });
     dispatch(commonUiActions.showToastMessage("장바구니에 추가됐습니다!", "success"));
+    dispatch(getCartQty());
+    dispatch(getCartList());
   } catch (error) {
     dispatch({ type: types.ADD_TO_CART_FAIL, payload: error.message });
     dispatch(commonUiActions.showToastMessage(error.message, "error"));
   }
+  
 };
 
 const getCartList = () => async (dispatch) => {
@@ -30,6 +33,9 @@ const deleteCartItem = (id) => async (dispatch) => {
     await api.delete(`/api/cart/${id}`);
     dispatch({ type: types.DELETE_CART_ITEM_SUCCESS, payload: id });
     dispatch(commonUiActions.showToastMessage("상품이 삭제됐습니다!", "success"));
+    dispatch(getCartQty());
+    dispatch(getCartList());
+
   } catch (error) {
     dispatch({ type: types.DELETE_CART_ITEM_FAIL, payload: error.message });
   }
@@ -39,7 +45,11 @@ const updateQty = (id, value) => async (dispatch) => {
   try {
     dispatch({ type: types.UPDATE_CART_ITEM_REQUEST });
     const response = await api.put(`/api/cart/${id}`, { qty: value });
-    dispatch({ type: types.UPDATE_CART_ITEM_SUCCESS, payload: response.data });
+    dispatch({ type: types.UPDATE_CART_ITEM_SUCCESS, payload: response.data.data }); // 데이터 구조 확인 필요
+    // ✅ 추가: 리스트를 다시 불러와서 화면을 동기화
+    dispatch(getCartList()); 
+    dispatch(getCartQty());
+    dispatch(getCartList());
   } catch (error) {
     dispatch({ type: types.UPDATE_CART_ITEM_FAIL, payload: error.message });
   }

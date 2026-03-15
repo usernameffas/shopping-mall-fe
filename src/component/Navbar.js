@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -7,16 +7,19 @@ import {
   faSearch,
   faShoppingBag,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../action/userAction";
+import { cartActions } from "../action/cartAction"; // 파일명이 action이면 이렇게, actions면 끝에 s 붙이기!
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
   const { cartItemCount } = useSelector((state) => state.cart);
   const isMobile = window.navigator.userAgent.indexOf("Mobile") !== -1;
   const [showSearchBox, setShowSearchBox] = useState(false);
+  const [width, setWidth] = useState(0);
+  let navigate = useNavigate();
+
   const menuList = [
     "여성",
     "Divided",
@@ -27,8 +30,14 @@ const Navbar = ({ user }) => {
     "Sale",
     "지속가능성",
   ];
-  let [width, setWidth] = useState(0);
-  let navigate = useNavigate();
+
+  // ✅ 장바구니 숫자 갱신 트리거
+  useEffect(() => {
+    if (user) {
+      dispatch(cartActions.getCartQty());
+    }
+  }, [user, dispatch]);
+
   const onCheckEnter = (event) => {
     if (event.key === "Enter") {
       if (event.target.value === "") {
@@ -37,9 +46,12 @@ const Navbar = ({ user }) => {
       navigate(`?name=${event.target.value}`);
     }
   };
+
   const logout = () => {
     dispatch(userActions.logout());
   };
+
+  // ❗ 여기가 42번 라인 근처입니다. 함수 내부임을 보장합니다.
   return (
     <div>
       {showSearchBox && (
@@ -135,7 +147,7 @@ const Navbar = ({ user }) => {
             </li>
           ))}
         </ul>
-        {!isMobile && ( // admin페이지에서 같은 search-box스타일을 쓰고있음 그래서 여기서 서치박스 안보이는것 처리를 해줌
+        {!isMobile && (
           <div className="search-box landing-search-box ">
             <FontAwesomeIcon icon={faSearch} />
             <input

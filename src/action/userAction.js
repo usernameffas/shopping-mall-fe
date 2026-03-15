@@ -45,9 +45,23 @@ const registerUser = ({ email, name, password }, navigate) => async (dispatch) =
   }
 };
 
+const loginWithGoogle = (credential) => async (dispatch) => {
+  try {
+    dispatch({ type: types.LOGIN_REQUEST });
+    const response = await api.post("/api/user/google", { credential });
+    dispatch({ type: types.LOGIN_SUCCESS, payload: response.data.user });
+    sessionStorage.setItem("token", response.data.token);
+    dispatch(commonUiActions.showToastMessage("구글 로그인 성공!", "success"));
+  } catch (error) {
+    dispatch({ type: types.LOGIN_FAIL, payload: error.message });
+    dispatch(commonUiActions.showToastMessage("구글 로그인 실패", "error"));
+  }
+};
+
 export const userActions = {
   loginWithToken,
   loginWithEmail,
   logout,
   registerUser,
+  loginWithGoogle,
 };

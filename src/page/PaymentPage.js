@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import OrderReceipt from "../component/OrderReceipt";
-import PaymentForm from "../component/PaymentForm";
 import "../style/paymentPage.style.css";
 import { useSelector, useDispatch } from "react-redux";
 import { orderActions } from "../action/orderAction";
-import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { commonUiActions } from "../action/commonUiAction";
 import { cc_expires_format } from "../utils/number";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { cartList } = useSelector((state) => state.cart);
+  const { orderNum } = useSelector((state) => state.order);
+  const [firstLoading, setFirstLoading] = useState(true);
 
   const [cardValue, setCardValue] = useState({
     cvc: "",
@@ -20,8 +21,7 @@ const PaymentPage = () => {
     name: "",
     number: "",
   });
-  const navigate = useNavigate();
-  const [firstLoading, setFirstLoading] = useState(true);
+
   const [shipInfo, setShipInfo] = useState({
     firstName: "",
     lastName: "",
@@ -31,25 +31,45 @@ const PaymentPage = () => {
     zip: "",
   });
 
-  //맨처음 페이지 로딩할때는 넘어가고  오더번호를 받으면 성공페이지로 넘어가기
+  useEffect(() => {
+    if (cartList.length === 0) {
+      navigate("/cart");
+    }
+  }, [cartList]);
+
+  useEffect(() => {
+    if (firstLoading) {
+      setFirstLoading(false);
+      return;
+    }
+    if (orderNum) {
+      navigate("/order/complete");
+    }
+  }, [orderNum]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    //오더 생성하가ㅣ
+    dispatch(orderActions.createOrder({ shipInfo, cardValue }));
   };
 
   const handleFormChange = (event) => {
-    //shipInfo에 값 넣어주기
+    const { name, value } = event.target;
+    setShipInfo({ ...shipInfo, [name]: value });
   };
 
   const handlePaymentInfoChange = (event) => {
-    //카드정보 넣어주기
+    const { name, value } = event.target;
+    if (name === "expiry") {
+      setCardValue({ ...cardValue, [name]: cc_expires_format(value) });
+    } else {
+      setCardValue({ ...cardValue, [name]: value });
+    }
   };
 
   const handleInputFocus = (e) => {
     setCardValue({ ...cardValue, focus: e.target.name });
   };
-  //카트에 아이템이 없다면 다시 카트페이지로 돌아가기 (결제할 아이템이 없으니 결제페이지로 가면 안됌)
+
   return (
     <Container>
       <Row>
@@ -68,7 +88,6 @@ const PaymentPage = () => {
                       name="lastName"
                     />
                   </Form.Group>
-
                   <Form.Group as={Col} controlId="firstName">
                     <Form.Label>이름</Form.Label>
                     <Form.Control
@@ -79,7 +98,6 @@ const PaymentPage = () => {
                     />
                   </Form.Group>
                 </Row>
-
                 <Form.Group className="mb-3" controlId="formGridAddress1">
                   <Form.Label>연락처</Form.Label>
                   <Form.Control
@@ -89,7 +107,6 @@ const PaymentPage = () => {
                     name="contact"
                   />
                 </Form.Group>
-
                 <Form.Group className="mb-3" controlId="formGridAddress2">
                   <Form.Label>주소</Form.Label>
                   <Form.Control
@@ -99,7 +116,6 @@ const PaymentPage = () => {
                     name="address"
                   />
                 </Form.Group>
-
                 <Row className="mb-3">
                   <Form.Group as={Col} controlId="formGridCity">
                     <Form.Label>City</Form.Label>
@@ -109,7 +125,6 @@ const PaymentPage = () => {
                       name="city"
                     />
                   </Form.Group>
-
                   <Form.Group as={Col} controlId="formGridZip">
                     <Form.Label>Zip</Form.Label>
                     <Form.Control
@@ -120,12 +135,11 @@ const PaymentPage = () => {
                   </Form.Group>
                 </Row>
                 <div className="mobile-receipt-area">
-                  {/* <OrderReceipt /> */}
+                  <OrderReceipt />
                 </div>
                 <div>
                   <h2 className="payment-title">결제 정보</h2>
                 </div>
-
                 <Button
                   variant="dark"
                   className="payment-button pay-button"
@@ -138,7 +152,7 @@ const PaymentPage = () => {
           </div>
         </Col>
         <Col lg={5} className="receipt-area">
-          {/* <OrderReceipt /> */}
+          <OrderReceipt />
         </Col>
       </Row>
     </Container>
